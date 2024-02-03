@@ -1,11 +1,8 @@
 import { createHash } from "crypto";
 import { createReadStream } from "fs";
 
-const __dirname = import.meta.dirname;
-
-export const getHash = async (data) => {
-  const promise = new Promise((resolve) => {
-    const file = data.split(" ")[1];
+export const getHash = async (file) => {
+  return new Promise((resolve, reject) => {
     let content = "";
     const rs = createReadStream(file);
 
@@ -21,7 +18,7 @@ export const getHash = async (data) => {
       process.stdout.write(`${hex}\n`);
       resolve();
     });
-  });
 
-  return promise;
+    rs.on("error", reject);
+  });
 };
