@@ -1,31 +1,39 @@
 import { list, navigate } from "./fs/index.js";
 import { handleExit } from "./handleExit.js";
+import { handleOSCommands, OSCommands } from "./os/index.js";
 
 export const handleInput = async (data, userName) => {
   const clearData = data.trim();
 
-  const commands = {
+  const fsCommands = {
     ".exit": () => handleExit(clearData, userName),
     up: () => navigate(clearData),
     cd: () => navigate(clearData),
-    list,
+    ls: list,
   };
 
-  const keys = Object.keys(commands);
+  const FSKeys = Object.keys(fsCommands);
+
+  const allCommands = {
+    ...fsCommands,
+    "os --": () => handleOSCommands(clearData),
+  };
+
+  const allKeys = Object.keys(allCommands);
 
   if (clearData === "HELP") {
-    console.log(keys);
+    console.log([...FSKeys, ...OSCommands]);
     return;
   }
 
-  const command = keys.find((key) => clearData.startsWith(key));
+  const command = allKeys.find((key) => clearData.startsWith(key));
 
   if (command) {
     try {
-      await commands[command]();
+      await allCommands[command]();
     } catch (e) {
       console.log("Operation failed");
-      // console.log( e);
+      console.log(e);
     }
   } else {
     console.log("Invalid input");
