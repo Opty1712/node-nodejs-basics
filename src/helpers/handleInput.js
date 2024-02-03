@@ -1,22 +1,24 @@
+import { getHash } from "./crypto/index.js";
 import { list, navigate } from "./fs/index.js";
 import { handleExit } from "./handleExit.js";
-import { handleOSCommands, OSCommands } from "./os/index.js";
+import { OSCommands, handleOSCommands } from "./os/index.js";
 
 export const handleInput = async (data, userName) => {
   const clearData = data.trim();
 
   const fsCommands = {
-    ".exit": () => handleExit(clearData, userName),
-    up: () => navigate(clearData),
-    cd: () => navigate(clearData),
+    ".exit": async () => handleExit(clearData, userName),
+    up: async () => navigate(clearData),
+    cd: async () => navigate(clearData),
     ls: list,
+    hash: async () => getHash(clearData),
   };
 
   const FSKeys = Object.keys(fsCommands);
 
   const allCommands = {
     ...fsCommands,
-    "os --": () => handleOSCommands(clearData),
+    "os --": async () => handleOSCommands(clearData),
   };
 
   const allKeys = Object.keys(allCommands);

@@ -5,7 +5,7 @@ import {
   handleInput,
   init,
   showDirectory,
-} from "./utils/index.js";
+} from "./helpers/index.js";
 
 const rl = getRLService();
 const userName = getUsername();
