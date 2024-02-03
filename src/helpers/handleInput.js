@@ -8,9 +8,9 @@ export const handleInput = async (data, userName) => {
   const clearData = data.trim();
 
   const fsCommands = {
-    ".exit": async () => handleExit(clearData, userName),
-    up: async () => navigate(clearData),
-    cd: async () => navigate(clearData),
+    ".exit": () => handleExit(clearData, userName),
+    up: () => navigate(clearData),
+    cd: () => navigate(clearData),
     ls: list,
     hash: async () => await getHash(clearData.split(" ")[1]),
     compress: async () => {

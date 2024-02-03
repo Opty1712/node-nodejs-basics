@@ -4,7 +4,8 @@ export const getRLService = () => {
   const rl = createInterface({
     input: process.stdin,
     output: process.stdout,
-    prompt: ">>>your command here, to list available commands send HELP>>>",
+    prompt:
+      ">>>send your command here (to list all available commands send HELP)>>>",
   });
 
   return rl;
