@@ -1,4 +1,7 @@
-export const handleExit = (userName) => {
-  console.log(`\nThank you for using File Manager, ${userName}, goodbye!`);
-  process.exit(0);
+import { exit } from "./exit.js";
+
+export const handleExit = (data, userName) => {
+  if (data.includes(".exit")) {
+    exit(userName);
+  }
 };

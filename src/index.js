@@ -1,17 +1,23 @@
-import { getUsername, handleExit } from "./utils/index.js";
+import {
+  exit,
+  getRLService,
+  getUsername,
+  handleInput,
+  init,
+  showDirectory,
+} from "./utils/index.js";
 
+const rl = getRLService();
 const userName = getUsername();
 
-console.log(`Welcome to the File Manager, ${userName || "unknown user"}!`);
+init(userName, rl);
 
-process.stdin.on("data", (data) => {
-  const stringifiedData = data.toString();
-
-  if (stringifiedData.includes(".exit")) {
-    handleExit(userName);
-  }
+rl.on("SIGINT", () => {
+  exit(userName);
 });
 
-process.on("SIGINT", () => {
-  handleExit(userName);
+rl.on("line", async (data) => {
+  await handleInput(data, userName);
+  showDirectory();
+  rl.prompt();
 });

@@ -1,2 +1,6 @@
+export { exit } from "./exit.js";
+export { getRLService } from "./getRLService.js";
 export { getUsername } from "./getUsername.js";
-export { handleExit } from "./handleExit.js";
+export { handleInput } from "./handleInput.js";
+export { init } from "./init.js";
+export { showDirectory } from "./showDirectory.js";
