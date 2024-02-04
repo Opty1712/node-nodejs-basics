@@ -10,7 +10,7 @@ export const decompress = async (fileFrom, fileTo) => {
     rs.pipe(brotli).pipe(ws);
 
     rs.on("end", () => {
-      console.log("Completed");
+      console.log("File decompressed");
       resolve();
     });
 

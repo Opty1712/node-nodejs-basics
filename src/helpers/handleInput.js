@@ -1,7 +1,17 @@
 import { compress, decompress } from "./archive/index.js";
 import { getHash } from "./crypto/index.js";
+import { invalidInput, operationFailed, pathWarning } from "./errors.js";
 import { extractArgumentsFromInput } from "./extractArgumentsFromInput.js";
-import { list, navigate } from "./fs/index.js";
+import {
+  copy,
+  create,
+  list,
+  move,
+  navigate,
+  read,
+  remove,
+  rename,
+} from "./fs/index.js";
 import { handleExit } from "./handleExit.js";
 import {
   getCPUInfo,
@@ -22,6 +32,30 @@ export const handleInput = async (data, userName) => {
       navigate(args[0]);
     },
     ls: list,
+    cat: async () => {
+      const args = extractArgumentsFromInput("cat", clearData, 1);
+      await read(args[0]);
+    },
+    add: async () => {
+      const args = extractArgumentsFromInput("add", clearData, 1);
+      await create(args[0]);
+    },
+    rn: async () => {
+      const [fileFrom, fileTo] = extractArgumentsFromInput("rn", clearData, 2);
+      await rename(fileFrom, fileTo);
+    },
+    cp: async () => {
+      const [fileFrom, fileTo] = extractArgumentsFromInput("cp", clearData, 2);
+      await copy(fileFrom, fileTo);
+    },
+    mv: async () => {
+      const [fileFrom, fileTo] = extractArgumentsFromInput("mv", clearData, 2);
+      await move(fileFrom, fileTo);
+    },
+    rm: async () => {
+      const args = extractArgumentsFromInput("rm", clearData, 1);
+      await remove(args[0]);
+    },
     hash: async () => {
       const args = extractArgumentsFromInput("hash", clearData, 1);
       await getHash(args[0]);
@@ -64,16 +98,12 @@ export const handleInput = async (data, userName) => {
     try {
       await commands[command]();
     } catch (e) {
-      console.log(`\x1b[31m${e || "Operation failed"}\x1b[0m`);
-      console.log(
-        '\x1b[33mIf any path contains spaces → use quotes for all paths, f.e. «cp "my dir/my file.js" "dest.js"»\x1b[0m'
-      );
+      console.log(`\x1b[31m${e || operationFailed}\x1b[0m`);
+      console.log(pathWarning);
       // console.log(e);
     }
   } else {
-    console.log("\x1b[31mInvalid input\x1b[0m");
-    console.log(
-      '\x1b[33mIf any path contains spaces → use quotes for all paths, f.e. «cp "my dir/my file.js" "dest.js"»\x1b[0m'
-    );
+    console.log(`\x1b[31m${invalidInput}\x1b[0m`);
+    console.log(pathWarning);
   }
 };

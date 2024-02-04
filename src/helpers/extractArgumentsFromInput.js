@@ -1,3 +1,5 @@
+import { invalidInput } from "./errors.js";
+
 export const extractArgumentsFromInput = (command, data, argsAmount) => {
   const onlyArguments = data.replace(command, "").trim();
 
@@ -11,17 +13,18 @@ export const extractArgumentsFromInput = (command, data, argsAmount) => {
     .map((value) => value.trim())
     .filter(Boolean);
 
-  if (splittedByQuotation.length > 0) {
-    if (splittedByQuotation.length !== argsAmount) {
-      throw "Invalid input";
-    }
+  const isQuotationsWay =
+    splittedByQuotation.length > 0 && onlyArguments !== splittedByQuotation[0];
 
+  if (isQuotationsWay) {
+    if (splittedByQuotation.length !== argsAmount) {
+      throw invalidInput;
+    }
     return splittedByQuotation;
   }
 
   if (splittedBySpaces.length !== argsAmount) {
-    throw "Invalid input";
+    throw invalidInput;
   }
-
   return splittedBySpaces;
 };
