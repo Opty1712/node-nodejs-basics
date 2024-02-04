@@ -1,52 +1,79 @@
 import { compress, decompress } from "./archive/index.js";
 import { getHash } from "./crypto/index.js";
+import { extractArgumentsFromInput } from "./extractArgumentsFromInput.js";
 import { list, navigate } from "./fs/index.js";
 import { handleExit } from "./handleExit.js";
-import { OSCommands, handleOSCommands } from "./os/index.js";
+import {
+  getCPUInfo,
+  showArch,
+  showEOL,
+  showHomeDir,
+  showUsername,
+} from "./os/index.js";
 
 export const handleInput = async (data, userName) => {
   const clearData = data.trim();
 
-  const fsCommands = {
+  const commands = {
     ".exit": () => handleExit(clearData, userName),
-    up: () => navigate(clearData),
-    cd: () => navigate(clearData),
+    up: () => navigate("../"),
+    cd: () => {
+      const args = extractArgumentsFromInput("cd", clearData, 1);
+      navigate(args[0]);
+    },
     ls: list,
-    hash: async () => await getHash(clearData.split(" ")[1]),
+    hash: async () => {
+      const args = extractArgumentsFromInput("hash", clearData, 1);
+      await getHash(args[0]);
+    },
     compress: async () => {
-      const [, fileFrom, fileTo] = clearData.split(" ");
+      const [fileFrom, fileTo] = extractArgumentsFromInput(
+        "compress",
+        clearData,
+        2
+      );
+
       await compress(fileFrom, fileTo);
     },
     decompress: async () => {
-      const [, fileFrom, fileTo] = clearData.split(" ");
+      const [fileFrom, fileTo] = extractArgumentsFromInput(
+        "decompress",
+        clearData,
+        2
+      );
+
       await decompress(fileFrom, fileTo);
     },
+    "os --EOL": showEOL,
+    "os --homedir": showHomeDir,
+    "os --cpus": getCPUInfo,
+    "os --username": showUsername,
+    "os --architecture": showArch,
   };
 
-  const FSKeys = Object.keys(fsCommands);
-
-  const allCommands = {
-    ...fsCommands,
-    "os --": async () => handleOSCommands(clearData),
-  };
-
-  const allKeys = Object.keys(allCommands);
+  const keys = Object.keys(commands);
 
   if (clearData === "HELP") {
-    console.log([...FSKeys, ...OSCommands]);
+    console.log(keys);
     return;
   }
 
-  const command = allKeys.find((key) => clearData.startsWith(key));
+  const command = keys.find((key) => clearData.startsWith(key));
 
   if (command) {
     try {
-      await allCommands[command]();
+      await commands[command]();
     } catch (e) {
-      console.log("Operation failed");
+      console.log(`\x1b[31m${e || "Operation failed"}\x1b[0m`);
+      console.log(
+        '\x1b[33mIf any path contains spaces → use quotes for all paths, f.e. «cp "my dir/my file.js" "dest.js"»\x1b[0m'
+      );
       // console.log(e);
     }
   } else {
-    console.log("Invalid input");
+    console.log("\x1b[31mInvalid input\x1b[0m");
+    console.log(
+      '\x1b[33mIf any path contains spaces → use quotes for all paths, f.e. «cp "my dir/my file.js" "dest.js"»\x1b[0m'
+    );
   }
 };

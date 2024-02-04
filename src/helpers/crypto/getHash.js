@@ -1,22 +1,27 @@
 import { createHash } from "crypto";
 import { createReadStream } from "fs";
+import { checkIsFileExists } from "../checkIsFileExists.js";
 
 export const getHash = async (file) => {
-  return new Promise((resolve, reject) => {
-    let content = "";
+  return new Promise(async (resolve, reject) => {
+    const isFileExists = await checkIsFileExists(file);
+
+    if (!isFileExists) {
+      reject();
+    }
+
+    const hash = createHash("sha256");
     const rs = createReadStream(file);
 
-    rs.on("data", (data) => {
-      content += data.toString();
-    });
+    rs.on("readable", () => {
+      const data = rs.read();
 
-    rs.on("end", () => {
-      const hashSum = createHash("sha256");
-      hashSum.update(content);
-      const hex = hashSum.digest("hex");
-
-      process.stdout.write(`${hex}\n`);
-      resolve();
+      if (data) {
+        hash.update(data);
+      } else {
+        console.log(`${hash.digest("hex")}`);
+        resolve();
+      }
     });
 
     rs.on("error", reject);

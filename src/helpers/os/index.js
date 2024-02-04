@@ -1,3 +1,5 @@
-export { EOL } from "./EOL.js";
-export { OSCommands, handleOSCommands } from "./handleOSCommands.js";
-export { homedir } from "./homedir.js";
+export { EOL, showEOL } from "./EOL.js";
+export { showArch } from "./arch.js";
+export { getCPUInfo } from "./cpus.js";
+export { homedir, showHomeDir } from "./homedir.js";
+export { showUsername } from "./username.js";
