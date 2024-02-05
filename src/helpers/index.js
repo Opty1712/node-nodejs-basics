@@ -1,3 +1,4 @@
+export { invalidInput, operationFailed, pathWarning } from "./errors.js";
 export { exit } from "./exit.js";
 export { getRLService } from "./getRLService.js";
 export { getUsername } from "./getUsername.js";
